@@ -2,10 +2,15 @@
 ```
 docker-compose -f docker-compose-dynamodb.yaml up
 ```
+The docker-compose-dynamodb.yaml file bring up
+- GUI for DynamoDB - [dynamodb-admin](https://github.com/aaronshaf/dynamodb-admin)
+- Will create test tables
+- Will insert seed data into the tables
+- UI will run on http://localhost:7000/
 
-## GUI for DynamoDB - [dynamodb-admin](https://github.com/aaronshaf/dynamodb-admin)
-- Install [npm package](https://www.npmjs.com/package/dynamodb-admin?activeTab=code) for above DynamoDB UI
-### Command to run the dynamodb-admin GUI
+
+### Command to run the dynamodb-admin GUI 
+#### Note: [Need not run this separately, as its included in the docker file itself
 ```
 DYNAMO_ENDPOINT=http://localhost:9094  dynamodb-admin -p 7000 
 ```
