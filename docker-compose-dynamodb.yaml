@@ -28,7 +28,7 @@ services:
     image: banst/awscli
     container_name: app-dynamodb_migrator
     working_dir: /home/dynamodblocal
-    command: dynamodb create-table --cli-input-json file://test_table.json --endpoint-url http://dynamodb:8000
+    command: dynamodb create-table --cli-input-json file://mytable.json --endpoint-url http://dynamodb:8000
     volumes:
       - ./schema:/home/dynamodblocal
     environment:
@@ -43,7 +43,7 @@ services:
     image: banst/awscli 
     container_name: app-dynamodb_seeder
     working_dir: /home/dynamodblocal
-    command: dynamodb batch-write-item --request-items file://test_table_seeder.json --endpoint-url http://dynamodb:8000
+    command: dynamodb batch-write-item --request-items file://mytable_seeder.json --endpoint-url http://dynamodb:8000
     volumes:
       - ./schema:/home/dynamodblocal
     environment:

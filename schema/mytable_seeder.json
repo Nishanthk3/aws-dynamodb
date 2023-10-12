@@ -1,5 +1,5 @@
 {
-  "test_table": [
+  "mytable": [
     {
       "PutRequest": {
         "Item": {
@@ -10,7 +10,7 @@
             "S": "20210101"
           },
           "name": {
-            "S": "gold"
+            "S": "india"
           },
           "is_deleted": {
             "BOOL": false
@@ -28,7 +28,7 @@
             "S": "20210101"
           },
           "name": {
-            "S": "copper"
+            "S": "australia"
           },
           "is_deleted": {
             "BOOL": false
