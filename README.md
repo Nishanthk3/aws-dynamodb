@@ -7,6 +7,7 @@ The docker-compose-dynamodb.yaml file bring up
 - Will create test tables
 - Will insert seed data into the tables
 - UI will run on http://localhost:7000/
+- Will run Redis on http://localhost:7001/ using Redis_Insight
 
 
 ### Command to run the dynamodb-admin GUI 
