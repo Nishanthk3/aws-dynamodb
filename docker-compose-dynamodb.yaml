@@ -3,7 +3,7 @@ services:
   dynamodb:
     image: amazon/dynamodb-local
     hostname: dynamodblocal
-    container_name: dynamodb-local
+    container_name: p-dynamodb-local
     working_dir: /home/dynamodblocal
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /data"
     volumes: 
@@ -13,7 +13,7 @@ services:
 
   redis:
     image: redis:latest
-    container_name: redis
+    container_name: p-redis
     volumes:
       - ./redis_volume_data:/data
     ports:
@@ -21,7 +21,7 @@ services:
 
   redis_insight:
     image: redislabs/redisinsight:latest
-    container_name: redis_insight
+    container_name: p-redis_insight
     volumes:
       - ./redis_insight_volume_data:/data
     ports:
@@ -30,7 +30,7 @@ services:
 ## UI for Dynamo DB
   dynamodb_admin:
     image: aaronshaf/dynamodb-admin
-    container_name: app-dynamodb_admin
+    container_name: p-app-dynamodb_admin
     # working_dir: /home/dynamodblocal
     ports:
       - "7000:8001"
@@ -42,7 +42,7 @@ services:
 ## will create test tables
   dynamodb_migrator:
     image: banst/awscli
-    container_name: app-dynamodb_migrator
+    container_name: p-app-dynamodb_migrator
     working_dir: /home/dynamodblocal
     command: dynamodb create-table --cli-input-json file://mytable.json --endpoint-url http://dynamodb:8000
     volumes:
@@ -57,7 +57,7 @@ services:
 ## will seed data into test tables
   dynamodb_seeder:
     image: banst/awscli 
-    container_name: app-dynamodb_seeder
+    container_name: p-app-dynamodb_seeder
     working_dir: /home/dynamodblocal
     command: dynamodb batch-write-item --request-items file://mytable_seeder.json --endpoint-url http://dynamodb:8000
     volumes:
