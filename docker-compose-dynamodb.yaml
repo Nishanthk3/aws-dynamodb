@@ -1,4 +1,12 @@
 version: "3.8"
+
+networks:
+  redis-net:
+    name: redis-net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16
 services:
   dynamodb:
     image: amazon/dynamodb-local
@@ -6,26 +14,10 @@ services:
     container_name: p-dynamodb-local
     working_dir: /home/dynamodblocal
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /data"
-    volumes: 
+    volumes:
       - ./dynamodb-data:/data
     ports:
       - 9094:8000
-
-  redis:
-    image: redis:latest
-    container_name: p-redis
-    volumes:
-      - ./redis_volume_data:/data
-    ports:
-      - 6379:6379
-
-  redis_insight:
-    image: redislabs/redisinsight:latest
-    container_name: p-redis_insight
-    volumes:
-      - ./redis_insight_volume_data:/data
-    ports:
-      - 7001:8001
 
 ## UI for Dynamo DB
   dynamodb_admin:
@@ -33,7 +25,7 @@ services:
     container_name: p-app-dynamodb_admin
     # working_dir: /home/dynamodblocal
     ports:
-      - "7000:8001"
+      - "7010:8001"
     environment:
       - DYNAMO_ENDPOINT=http://dynamodb:8000
     depends_on:
@@ -56,7 +48,7 @@ services:
 
 ## will seed data into test tables
   dynamodb_seeder:
-    image: banst/awscli 
+    image: banst/awscli
     container_name: p-app-dynamodb_seeder
     working_dir: /home/dynamodblocal
     command: dynamodb batch-write-item --request-items file://mytable_seeder.json --endpoint-url http://dynamodb:8000
@@ -70,3 +62,173 @@ services:
       - dynamodb_migrator
       - dynamodb
     restart: on-failure
+
+  redis:
+    image: redis:latest
+    container_name: p-redis
+    volumes:
+      - ./redis_volume_data:/data
+    ports:
+      - 6379:6379
+
+  redis_insight:
+    image: redislabs/redisinsight:latest
+    container_name: p-redis_insight
+    volumes:
+      - ./redis_insight_volume_data:/data
+    ports:
+      - 7011:8001
+
+# REDIS_CLUSTER_ANNOUNCE_IP is a local IP address of the host machine and cant get it by ipconfig getifaddr en0
+  redis-0:
+    image: bitnami/redis-cluster
+    container_name: p-redis-0
+    restart: always
+    networks:
+      redis-net:
+        ipv4_address: 172.22.0.100
+    environment:
+      - 'REDIS_PORT_NUMBER=7000'
+      - 'ALLOW_EMPTY_PASSWORD=yes'
+      - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+      - 'REDIS_CLUSTER_ANNOUNCE_PORT=7000'
+      - 'REDIS_CLUSTER_ANNOUNCE_IP=192.168.86.204'
+      - 'REDIS_CLUSTER_BUS_ANNOUNCE_PORT=17000'
+      - 'REDIS_CLUSTER_DYNAMIC_IPS=no'
+    ports:
+      - "7000:7000"
+      - "17000:17000"
+
+  redis-1:
+    image: bitnami/redis-cluster
+    container_name: p-redis-1
+    restart: always
+    networks:
+      redis-net:
+        ipv4_address: 172.22.0.101
+    environment:
+      - 'REDIS_PORT_NUMBER=7001'
+      - 'ALLOW_EMPTY_PASSWORD=yes'
+      - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+      - 'REDIS_CLUSTER_ANNOUNCE_PORT=7001'
+      - 'REDIS_CLUSTER_ANNOUNCE_IP=192.168.86.204'
+      - 'REDIS_CLUSTER_BUS_ANNOUNCE_PORT=17001'
+      - 'REDIS_CLUSTER_DYNAMIC_IPS=no'
+    ports:
+      - "7001:7001"
+      - "17001:17001"
+
+  redis-2:
+    image: bitnami/redis-cluster
+    container_name: p-redis-2
+    restart: always
+    networks:
+      redis-net:
+        ipv4_address: 172.22.0.102
+    environment:
+      - 'REDIS_PORT_NUMBER=7002'
+      - 'ALLOW_EMPTY_PASSWORD=yes'
+      - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+      - 'REDIS_CLUSTER_ANNOUNCE_PORT=7002'
+      - 'REDIS_CLUSTER_ANNOUNCE_IP=192.168.86.204'
+      - 'REDIS_CLUSTER_BUS_ANNOUNCE_PORT=17002'
+      - 'REDIS_CLUSTER_DYNAMIC_IPS=no'
+    ports:
+      - "7002:7002"
+      - "17002:17002"
+
+  redis-3:
+    image: bitnami/redis-cluster
+    container_name: p-redis-3
+    restart: always
+    networks:
+      redis-net:
+        ipv4_address: 172.22.0.103
+    environment:
+      - 'REDIS_PORT_NUMBER=7003'
+      - 'ALLOW_EMPTY_PASSWORD=yes'
+      - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+      - 'REDIS_CLUSTER_ANNOUNCE_PORT=7003'
+      - 'REDIS_CLUSTER_ANNOUNCE_IP=192.168.86.204'
+      - 'REDIS_CLUSTER_BUS_ANNOUNCE_PORT=17003'
+      - 'REDIS_CLUSTER_DYNAMIC_IPS=no'
+    ports:
+      - "7003:7003"
+      - "17003:17003"
+
+  redis-4:
+    image: bitnami/redis-cluster
+    container_name: p-redis-4
+    restart: always
+    networks:
+      redis-net:
+        ipv4_address: 172.22.0.104
+    environment:
+      - 'REDIS_PORT_NUMBER=7004'
+      - 'ALLOW_EMPTY_PASSWORD=yes'
+      - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+      - 'REDIS_CLUSTER_ANNOUNCE_PORT=7004'
+      - 'REDIS_CLUSTER_ANNOUNCE_IP=192.168.86.204'
+      - 'REDIS_CLUSTER_BUS_ANNOUNCE_PORT=17004'
+      - 'REDIS_CLUSTER_DYNAMIC_IPS=no'
+    ports:
+      - "7004:7004"
+      - "17004:17004"
+
+  redis-5:
+    image: bitnami/redis-cluster
+    container_name: p-redis-5
+    restart: always
+    networks:
+      redis-net:
+        ipv4_address: 172.22.0.105
+    environment:
+      - 'REDIS_PORT_NUMBER=7005'
+      - 'ALLOW_EMPTY_PASSWORD=yes'
+      - 'REDIS_NODES=redis-0 redis-1 redis-2 redis-3 redis-4 redis-5'
+      - 'REDIS_CLUSTER_ANNOUNCE_PORT=7005'
+      - 'REDIS_CLUSTER_ANNOUNCE_IP=192.168.86.204'
+      - 'REDIS_CLUSTER_BUS_ANNOUNCE_PORT=17005'
+      - 'REDIS_CLUSTER_DYNAMIC_IPS=no'
+    ports:
+      - "7005:7005"
+      - "17005:17005"
+
+  redis-cluster-init:
+    image: redis:6.2
+    container_name: p-redis-cluster-init
+    restart: 'no'
+    networks:
+      redis-net:
+        ipv4_address: 172.22.0.106
+    depends_on:
+      - redis-0
+      - redis-1
+      - redis-2
+      - redis-3
+      - redis-4
+      - redis-5
+    entrypoint: []
+    command:
+      - /bin/bash
+      - -c
+      - redis-cli --cluster create 172.22.0.100:7000 172.22.0.101:7001 172.22.0.102:7002 172.22.0.103:7003 172.22.0.104:7004 172.22.0.105:7005 --cluster-replicas 1 --cluster-yes
+
+  redis_commander:
+    image: rediscommander/redis-commander:latest
+    container_name: p-redis_web
+    environment:
+      REDIS_HOSTS: "local:redis-0:7000,local:redis-1:7001,local:redis-2:7002,local:redis-3:7003,local:redis-4:7004,local:redis-5:7005"
+    ports:
+      - "8002:8081"
+    depends_on:
+      - redis-1
+      - redis-2
+      - redis-3
+      - redis-4
+      - redis-5
+      - redis-0
+      - redis-cluster-init
+    networks:
+      redis-net:
+        ipv4_address: 172.22.0.107
